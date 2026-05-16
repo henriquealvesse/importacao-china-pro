@@ -847,6 +847,17 @@ async function load(){
 function fmt(n){return'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtN(n,d=2){return Number(n||0).toFixed(d);}
 
+// Sanitização — escapa HTML em qualquer string antes de inserir no DOM
+function s(str){
+    return String(str==null?'':str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#x27;')
+        .replace(/\//g,'&#x2F;');
+}
+
 function calcP(cny, fr, sg, iv, mg, ct) {
     const brl = cny / ct;
     const custoTotal = brl + fr + sg + iv;
@@ -907,7 +918,7 @@ function renderDashboard(){
     <div class="w-item">
         <div class="w-info">
             <div class="w-icon">${getEmoji(x.nome)}</div>
-            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${x.nome}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${x.codigo}</div></div>
+            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${s(x.nome)}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${s(x.codigo)}</div></div>
         </div>
         <div style="text-align:right;"><div style="color:var(--green); font-weight:700;">${fmtN(x.margemReal,0)}%</div><div style="font-size:11px; color:var(--t3);">ROI</div></div>
     </div>
@@ -918,7 +929,7 @@ function renderDashboard(){
     <div class="w-item">
         <div class="w-info">
             <div class="w-icon">${getEmoji(x.nome)}</div>
-            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${x.nome}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${x.codigo}</div></div>
+            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${s(x.nome)}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${s(x.codigo)}</div></div>
         </div>
         <div>${getStatusBadge(x.status)}</div>
     </div>
@@ -929,7 +940,7 @@ function renderDashboard(){
     <div class="w-item">
         <div class="w-info">
             <div class="w-icon">${getEmoji(x.nome)}</div>
-            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${x.nome}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${x.codigo}</div></div>
+            <div><div style="font-weight:600; font-size:13px; color:var(--t1);">${s(x.nome)}</div><div style="font-size:11px; color:var(--t2); font-family:monospace;">${s(x.codigo)}</div></div>
         </div>
         <div style="text-align:right;"><div style="color:var(--red); font-weight:700; font-size:14px;">${x.estoque} un</div></div>
     </div>
@@ -974,8 +985,8 @@ function renderCadastro(){
     <div class="prod-card-h">
         <div class="prod-card-img">${p.imagem ? `<img src="${p.imagem}" />` : `<span>${getEmoji(p.nome)}</span>`}</div>
         <div class="prod-card-info">
-            <div class="prod-sku">${p.codigo}</div>
-            <div class="prod-title">${p.nome} ${getStatusBadge(p.status)}</div>
+            <div class="prod-sku">${s(p.codigo)}</div>
+            <div class="prod-title">${s(p.nome)} ${getStatusBadge(p.status)}</div>
             <div class="prod-stats">
                 <div class="stat-box"><span class="stat-label">Custo Unit</span><span class="stat-value" style="color:#d4d4d8;">${fmt(p.custoTotal)}</span></div>
                 <div class="stat-box"><span class="stat-label">Preço Final</span><span class="stat-value v-green">${fmt(p.precoVenda)}</span></div>
@@ -994,8 +1005,8 @@ function renderCadastro(){
 function renderFrete(){
   document.getElementById('freteBody').innerHTML=ST.produtos.map(p=>`
     <tr>
-        <td style="font-family:monospace; color:var(--accent); font-weight:700">${p.codigo}</td>
-        <td style="font-weight:500;">${p.nome}</td>
+        <td style="font-family:monospace; color:var(--accent); font-weight:700">${s(p.codigo)}</td>
+        <td style="font-weight:500;">${s(p.nome)}</td>
         <td>${getStatusBadge(p.status)}</td>
         <td>${fmt(p.precoBRL)}</td>
         <td>${fmt(p.frete + p.seguro)}</td>
@@ -1009,8 +1020,8 @@ function renderFrete(){
 function renderPrec(){
   document.getElementById('precGrid').innerHTML=ST.produtos.map(p=>`
     <div class="kpi-card" style="padding:20px;">
-        <div style="font-weight:700; color:var(--accent); font-family:monospace; font-size:11px; margin-bottom:4px;">${p.codigo}</div>
-        <div style="font-weight:600; margin-bottom:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; justify-content:space-between;">${p.nome}</div>
+        <div style="font-weight:700; color:var(--accent); font-family:monospace; font-size:11px; margin-bottom:4px;">${s(p.codigo)}</div>
+        <div style="font-weight:600; margin-bottom:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; justify-content:space-between;">${s(p.nome)}</div>
         <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
             <div class="stat-box"><div class="stat-label">Custo Final</div><div class="stat-value" style="font-size:13px">${fmt(p.custoTotal)}</div></div>
             <div class="stat-box"><div class="stat-label">PVP Alvo</div><div class="stat-value v-green" style="font-size:13px">${fmt(p.precoVenda)}</div></div>
@@ -1053,10 +1064,10 @@ function getSelectedPay(gridId){
 function renderVendas(){
   document.getElementById('vendasBody').innerHTML=ST.vendas.map(x=>`
     <tr>
-        <td style="font-size:12px; color:var(--t2);">${x.dataVenda}</td>
-        <td style="color:var(--accent); font-family:monospace; font-weight:600;">${x.codigoProduto}</td>
-        <td style="font-weight:500">${x.nomeProduto}</td>
-        <td style="color:var(--t1);">${x.clienteNome||'<span style="color:var(--t3)">—</span>'}</td>
+        <td style="font-size:12px; color:var(--t2);">${s(x.dataVenda)}</td>
+        <td style="color:var(--accent); font-family:monospace; font-weight:600;">${s(x.codigoProduto)}</td>
+        <td style="font-weight:500">${s(x.nomeProduto)}</td>
+        <td style="color:var(--t1);">${x.clienteNome?s(x.clienteNome):'<span style="color:var(--t3)">—</span>'}</td>
         <td>${getPagamentoBadge(x.pagamento)}</td>
         <td style="font-weight:600">${x.quantidade}</td>
         <td>${fmt(x.precoVenda)}</td>
@@ -1072,8 +1083,8 @@ function renderVitrine(){
     <div class="vit-card" onclick="openCompra('${x.id}')">
         <div class="vit-img">${x.imagem ? `<img src="${x.imagem}" />` : `<span style="font-size:50px">${getEmoji(x.nome)}</span>`}</div>
         <div class="vit-body">
-            <div class="prod-sku">${x.codigo}</div>
-            <div style="font-weight:600; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px;">${x.nome}</div>
+            <div class="prod-sku">${s(x.codigo)}</div>
+            <div style="font-weight:600; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px;">${s(x.nome)}</div>
             <div style="color:var(--t1); font-weight:800; font-size:18px; margin-top:auto;">${fmt(x.precoVenda)}</div>
             <div style="font-size:11px; color:var(--t3); margin-top:8px; font-weight:500; display:flex; align-items:center; gap:4px;">
                 <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${x.estoque>0?'var(--green)':'var(--red)'};"></span>
@@ -1310,10 +1321,10 @@ function renderClientes(){
     const fl=ST.clientes.filter(c=>c.nome.toLowerCase().includes(q)||c.telefone.toLowerCase().includes(q));
     document.getElementById('clientesBody').innerHTML = fl.length ? fl.map(c=>`
         <tr>
-            <td style="font-weight:600;">${c.nome}</td>
-            <td style="color:var(--accent); font-family:monospace;">${c.telefone||'—'}</td>
-            <td style="color:var(--t2);">${c.endereco||'—'}</td>
-            <td style="color:var(--t2); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.obs||'—'}</td>
+            <td style="font-weight:600;">${s(c.nome)}</td>
+            <td style="color:var(--accent); font-family:monospace;">${s(c.telefone)||'—'}</td>
+            <td style="color:var(--t2);">${s(c.endereco)||'—'}</td>
+            <td style="color:var(--t2); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s(c.obs)||'—'}</td>
             <td>
                 <div style="display:flex; gap:8px;">
                     <button class="btn-icon" onclick="openEditClienteModal('${c.id}')"><i class="ph-bold ph-pencil-simple"></i></button>
